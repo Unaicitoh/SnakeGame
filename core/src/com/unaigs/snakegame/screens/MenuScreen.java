@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.ray3k.stripe.scenecomposer.SceneComposerStageBuilder;
 import com.unaigs.snakegame.SnakeGame;
 
 public class MenuScreen extends ScreenAdapter {
@@ -29,15 +28,21 @@ public class MenuScreen extends ScreenAdapter {
 		stage = new Stage(new ExtendViewport(960,540));
 		Gdx.input.setInputProcessor(stage);
 		skin = game.assets.getMenuUI();
-	
-		SceneComposerStageBuilder builder = new SceneComposerStageBuilder();
-		builder.build(stage,skin,Gdx.files.internal("menu_skin_main.json"));
 		
-		TextButton exitButton= stage.getRoot().findActor("exitButton");
-		exitButton.addListener(new ChangeListener() {
+		game.assets.getSceneBuilder().build(stage,skin,Gdx.files.internal("menu_skin_main.json"));
+		
+		TextButton textButton= stage.getRoot().findActor("startButton");
+		textButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
-				Gdx.app.log("END", "ENDING GAME");
+				game.setScreen(new MainScreen(game));
+			}
+		});
+		
+		textButton=stage.getRoot().findActor("exitButton");
+		textButton.addListener(new ChangeListener() {
+			@Override
+			public void changed (ChangeEvent event, Actor actor) {
 				Gdx.app.exit();
 			}
 		});
@@ -46,7 +51,7 @@ public class MenuScreen extends ScreenAdapter {
 
 	@Override
 	public void render(float delta) {
-		ScreenUtils.clear(0,0,0,1);
+		ScreenUtils.clear(0,.30f,0,1);
 		stage.act(delta);
 		stage.draw();
 		
