@@ -52,7 +52,7 @@ public class MenuScreen extends ScreenAdapter {
 
 	@Override
 	public void render(float delta) {
-		ScreenUtils.clear(0,.30f,0,1);
+		ScreenUtils.clear(0,0,0,1);
 		stage.act(delta);
 		stage.draw();
 		
@@ -66,6 +66,7 @@ public class MenuScreen extends ScreenAdapter {
 
 	@Override
 	public void dispose() {
+		Gdx.input.setInputProcessor(null);
 		stage.dispose();
 		skin.dispose();
 	}
