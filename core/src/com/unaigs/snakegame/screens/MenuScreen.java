@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.unaigs.snakegame.Assets;
 import com.unaigs.snakegame.SnakeGame;
 
 public class MenuScreen extends ScreenAdapter {
@@ -25,7 +26,7 @@ public class MenuScreen extends ScreenAdapter {
 	
 	@Override
 	public void show() {
-		stage = new Stage(new ExtendViewport(960,540));
+		stage = new Stage(new ExtendViewport(Assets.SCREEN_W,Assets.SCREEN_W));
 		Gdx.input.setInputProcessor(stage);
 		skin = game.assets.getMenuUI();
 		

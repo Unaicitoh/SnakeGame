@@ -8,6 +8,8 @@ import com.ray3k.stripe.scenecomposer.SceneComposerStageBuilder;
 public class Assets {
 
 	public static final int TILE_SIZE = 16;
+	public static final int SCREEN_W = 960;
+	public static final int SCREEN_H = 640;
 	
 	private Skin menuUI;
 	private SceneComposerStageBuilder builder;
