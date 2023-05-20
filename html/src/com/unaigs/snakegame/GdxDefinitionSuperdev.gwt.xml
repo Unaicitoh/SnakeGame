@@ -4,6 +4,7 @@
 	<inherits name='com.badlogic.gdx.backends.gdx_backends_gwt' />
 
     <inherits name='com.unaigs.snakegame.GdxDefinition' />
+    <inherits name="com.ray3k.stripe" />
     
     <collapse-all-properties />
     
