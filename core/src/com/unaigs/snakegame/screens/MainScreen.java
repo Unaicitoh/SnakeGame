@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.unaigs.snakegame.Assets;
 import com.unaigs.snakegame.SnakeGame;
 import com.unaigs.snakegame.entities.Direction;
@@ -31,40 +31,48 @@ public class MainScreen extends ScreenAdapter{
 	@Override
 	public void show() {
 		batch=new SpriteBatch();
-		stage = new Stage(new ExtendViewport(32*Assets.TILE_SIZE, 24*Assets.TILE_SIZE),batch);
+		stage = new Stage(new FitViewport(36*Assets.TILE_SIZE, 24*Assets.TILE_SIZE),batch);
 		Gdx.input.setInputProcessor(stage);
 		snake=new Snake(game.assets);
 		
 		stage.addListener(new InputListener() {
 			@Override
 			public boolean keyDown (InputEvent event, int keycode) {
-				Gdx.app.log("KEY",""+keycode);
-				switch(keycode) {
-				case Keys.UP:
-					if (lastDirection!=Direction.DOWN) {
-						snake.setDirection(Direction.UP);
-						lastDirection = Direction.UP;
-					}
-					break;
-				case Keys.DOWN:
-					if (lastDirection!=Direction.UP) {
-						snake.setDirection(Direction.DOWN);
-						lastDirection = Direction.DOWN;
-					}
-					break;
-				case Keys.LEFT:
-					if (lastDirection!=Direction.RIGHT) {
-						snake.setDirection(Direction.LEFT);
-						lastDirection = Direction.LEFT;
-					}
-					break;
-				default:
-					if (lastDirection!=Direction.LEFT) {
-						snake.setDirection(Direction.RIGHT);
-						lastDirection = Direction.RIGHT;
+				if(snake.isCanMove() && snake.isChangeDir()) {
+					switch(keycode) {
+					case Keys.UP:
+						if (lastDirection!=Direction.DOWN && lastDirection!=Direction.UP) {
+							snake.setDirection(Direction.UP);
+							snake.setVel(0,Assets.TILE_SIZE);
+							lastDirection = Direction.UP;
+							snake.setChangeDir(false);
+						}
+						break;
+					case Keys.DOWN:
+						if (lastDirection!=Direction.UP && lastDirection!=Direction.DOWN) {
+							snake.setDirection(Direction.DOWN);
+							snake.setVel(0,-Assets.TILE_SIZE);
+							lastDirection = Direction.DOWN;
+							snake.setChangeDir(false);
+						}
+						break;
+					case Keys.LEFT:
+						if (lastDirection!=Direction.RIGHT&& lastDirection!=Direction.LEFT) {
+							snake.setDirection(Direction.LEFT);
+							snake.setVel(-Assets.TILE_SIZE,0);
+							lastDirection = Direction.LEFT;
+							snake.setChangeDir(false);
+						}
+						break;
+					default:
+						if (lastDirection!=Direction.LEFT && lastDirection!=Direction.RIGHT) {
+							snake.setDirection(Direction.RIGHT);
+							snake.setVel(Assets.TILE_SIZE,0);
+							lastDirection = Direction.RIGHT;
+							snake.setChangeDir(false);
+						}
 					}
 				}
-				Gdx.app.log("dir", ""+lastDirection);
 				return false;
 			}
 		});
@@ -84,7 +92,7 @@ public class MainScreen extends ScreenAdapter{
 
 	private void update(float delta) {
 		stage.act(delta);
-		snake.update(delta);				
+		snake.update(delta, stage);							
 	}
 
 	@Override
@@ -100,6 +108,8 @@ public class MainScreen extends ScreenAdapter{
 		batch.dispose();
 
 	}
+	
+	
 	
 	private void drawBackground(TextureAtlas atlas) {
 		Sprite roof = atlas.createSprite("wall_up");
