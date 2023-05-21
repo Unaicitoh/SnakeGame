@@ -18,12 +18,12 @@ import com.unaigs.snakegame.entities.Snake;
 
 public class MainScreen extends ScreenAdapter{
 	
-
-
 	private SnakeGame game;
 	private Stage stage;
 	private SpriteBatch batch;
 	private Snake snake;
+	private Direction lastDirection = Direction.RIGHT;
+
 	public MainScreen(SnakeGame game) {
 		this.game=game;
 	}
@@ -41,17 +41,30 @@ public class MainScreen extends ScreenAdapter{
 				Gdx.app.log("KEY",""+keycode);
 				switch(keycode) {
 				case Keys.UP:
-					snake.setDirection(Direction.UP);
+					if (lastDirection!=Direction.DOWN) {
+						snake.setDirection(Direction.UP);
+						lastDirection = Direction.UP;
+					}
 					break;
 				case Keys.DOWN:
-					snake.setDirection(Direction.DOWN);
+					if (lastDirection!=Direction.UP) {
+						snake.setDirection(Direction.DOWN);
+						lastDirection = Direction.DOWN;
+					}
 					break;
 				case Keys.LEFT:
-					snake.setDirection(Direction.LEFT);
+					if (lastDirection!=Direction.RIGHT) {
+						snake.setDirection(Direction.LEFT);
+						lastDirection = Direction.LEFT;
+					}
 					break;
 				default:
-					snake.setDirection(Direction.RIGHT);
+					if (lastDirection!=Direction.LEFT) {
+						snake.setDirection(Direction.RIGHT);
+						lastDirection = Direction.RIGHT;
+					}
 				}
+				Gdx.app.log("dir", ""+lastDirection);
 				return false;
 			}
 		});

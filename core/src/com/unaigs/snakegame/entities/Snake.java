@@ -10,91 +10,106 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.unaigs.snakegame.Assets;
 
-public class Snake{
+public class Snake extends Sprite{
 
 	private List<Vector2> pos;
 	private Vector2 vel;
 	private HashMap<String,Sprite> parts;
 	private Direction direction = Direction.RIGHT;
+	private static final float MOVE_TIME = .15f;
+	private float moveTime;
 	
 	public Snake(Assets assets) {
 		pos = new ArrayList<Vector2>();
 		vel = new Vector2(Assets.TILE_SIZE,Assets.TILE_SIZE);
-		parts = new HashMap<String,Sprite>();
-		parts.put("head_right", assets.getAtlas().createSprite("head_right"));
-		parts.put("head_left", assets.getAtlas().createSprite("head_left"));
-		parts.put("head_up", assets.getAtlas().createSprite("head_up"));
-		parts.put("head_down", assets.getAtlas().createSprite("head_down"));
-		parts.put("body", assets.getAtlas().createSprite("body"));
-
+		parts = assets.getSnakeParts();
+		moveTime=MOVE_TIME;
 		for(int i =4; i>=1 ; i--) {
 			pos.add(new Vector2((i*Assets.TILE_SIZE)+Assets.TILE_SIZE, Assets.TILE_SIZE*2));
 		}
 		
-
 	}
 	
-	
 	public void draw(SpriteBatch batch) {
-		Sprite snake= new Sprite();
+		drawSnake(batch);
+	}
+
+	private void drawSnake(SpriteBatch batch) {
+		setScale(1.01f);
 		for(int i=0 ; i<pos.size(); i++) {
 			if(i==0) {
 				switch(direction) {
 				case UP:
-					setHeadSprite(snake,"head_up");
+					set(parts.get("head_up"));
 					break;
 				case DOWN:
-					setHeadSprite(snake,"head_down");
+					set(parts.get("head_down"));
 					break;
 				case RIGHT:
-					setHeadSprite(snake,"head_right");
+					set(parts.get("head_right"));
 					break;
 				default:
-					setHeadSprite(snake,"head_left");
+					set(parts.get("head_left"));
 				}
-				snake.setPosition(pos.get(i).x, pos.get(i).y);
-				snake.draw(batch);
+				setPosition(pos.get(i).x, pos.get(i).y);
+				super.draw(batch);
 			}else {
-				snake.set(parts.get("body"));
-				snake.setPosition(pos.get(i).x, pos.get(i).y);
-				snake.draw(batch);
+				set(parts.get("body"));
+				setPosition(pos.get(i).x, pos.get(i).y);
+				super.draw(batch);
 			}
-			
 		}
 	}
-
+	
 	public void update(float delta) {
-		switch(direction) {
-		case UP:
-			Gdx.app.log("POSITION", "x: "+pos.get(0).x+" / Y: "+pos.get(0).y);
-			pos.get(0).y+=vel.y*delta;
-			break;
-		case DOWN:
-			Gdx.app.log("POSITION", "x: "+pos.get(0).x+" / Y: "+pos.get(0).y);
-
-			pos.get(0).y+=-vel.x*delta;
-			break;
-		case LEFT:
-			Gdx.app.log("POSITION", "x: "+pos.get(0).x+" / Y: "+pos.get(0).y);
-
-			pos.get(0).x+=-vel.x*delta;
-			break;
-		default:
-			Gdx.app.log("POSITION", "x: "+pos.get(0).x+" / Y: "+pos.get(0).y);
-
-			pos.get(0).x+=vel.x*delta;
+		moveTime-=delta;
+		if(moveTime<=0) {
+			if(insideField()) {
+				moveSnake();				
+			}
 		}
-
 		
 	}
 
-
-	private void setHeadSprite(Sprite snake, String head) {
-		snake.set(parts.get(head));
+	private boolean insideField() {
+		boolean canMove=false;
+		pos.forEach((p)->{
+			//TODO pa mañana
+		});
+		return canMove;
 	}
+
+	private void moveSnake() {
+		moveTime=MOVE_TIME;
+		for(int i=pos.size()-1; i>0; i--) {
+			pos.get(i).set(pos.get(i-1));
+		}
+		switch(direction) {
+		case UP:
+				pos.get(0).y+=vel.y;
+			break;
+		case DOWN:
+				pos.get(0).y += -vel.x;
+			break;
+		case LEFT:
+				pos.get(0).x += -vel.x;
+			break;
+		default:
+				pos.get(0).x += vel.x;
+
+		}
+		Gdx.app.log("Snake",this.toString());
+	}
+
 
 
 	public void setDirection(Direction direction) {
 		this.direction = direction;
 	}
+
+	@Override
+	public String toString() {
+		return "Snake [pos=" + pos + ", vel=" + vel + ", direction=" + direction + "]";
+	}
+	
 }
