@@ -3,26 +3,33 @@ package com.unaigs.snakegame.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.unaigs.snakegame.Assets;
 import com.unaigs.snakegame.SnakeGame;
 import com.unaigs.snakegame.entities.Direction;
 import com.unaigs.snakegame.entities.Snake;
+import com.unaigs.snakegame.entities.Snake.SnakeMovementListener;
 
-public class MainScreen extends ScreenAdapter{
+public class MainScreen extends ScreenAdapter implements SnakeMovementListener{
 	
 	private SnakeGame game;
 	private Stage stage;
 	private SpriteBatch batch;
 	private Snake snake;
 	private Direction lastDirection = Direction.RIGHT;
+	private boolean gameOver=false;
+	private TextButton textButton;
 
 	public MainScreen(SnakeGame game) {
 		this.game=game;
@@ -31,51 +38,29 @@ public class MainScreen extends ScreenAdapter{
 	@Override
 	public void show() {
 		batch=new SpriteBatch();
-		stage = new Stage(new FitViewport(36*Assets.TILE_SIZE, 24*Assets.TILE_SIZE),batch);
+		stage = new Stage(new StretchViewport(36f*Assets.TILE_SIZE, 24f*Assets.TILE_SIZE),batch);
 		Gdx.input.setInputProcessor(stage);
-		snake=new Snake(game.assets);
-		
+		snake=new Snake(game.assets, this);
+		textButton = new TextButton("Restart", game.assets.menuUI);
+		textButton.addListener(new ClickListener() {
+
+			@Override
+			public void clicked (InputEvent event, float x, float y) {
+				game.setScreen(new MainScreen(game));
+			}
+			
+		});
 		stage.addListener(new InputListener() {
 			@Override
 			public boolean keyDown (InputEvent event, int keycode) {
-				if(snake.isCanMove() && snake.isChangeDir()) {
-					switch(keycode) {
-					case Keys.UP:
-						if (lastDirection!=Direction.DOWN && lastDirection!=Direction.UP) {
-							snake.setDirection(Direction.UP);
-							snake.setVel(0,Assets.TILE_SIZE);
-							lastDirection = Direction.UP;
-							snake.setChangeDir(false);
-						}
-						break;
-					case Keys.DOWN:
-						if (lastDirection!=Direction.UP && lastDirection!=Direction.DOWN) {
-							snake.setDirection(Direction.DOWN);
-							snake.setVel(0,-Assets.TILE_SIZE);
-							lastDirection = Direction.DOWN;
-							snake.setChangeDir(false);
-						}
-						break;
-					case Keys.LEFT:
-						if (lastDirection!=Direction.RIGHT&& lastDirection!=Direction.LEFT) {
-							snake.setDirection(Direction.LEFT);
-							snake.setVel(-Assets.TILE_SIZE,0);
-							lastDirection = Direction.LEFT;
-							snake.setChangeDir(false);
-						}
-						break;
-					default:
-						if (lastDirection!=Direction.LEFT && lastDirection!=Direction.RIGHT) {
-							snake.setDirection(Direction.RIGHT);
-							snake.setVel(Assets.TILE_SIZE,0);
-							lastDirection = Direction.RIGHT;
-							snake.setChangeDir(false);
-						}
-					}
+				if(!gameOver && snake.changeDir) {
+					handleInput(keycode);
 				}
 				return false;
 			}
 		});
+
+
 		
 	}
 
@@ -83,17 +68,30 @@ public class MainScreen extends ScreenAdapter{
 	public void render(float delta) {
 		ScreenUtils.clear(0,0,0,1);
 		update(delta);
-		stage.draw();
 		batch.begin();
-		drawBackground(game.assets.getAtlas());
+		drawBackground(game.assets.atlas);
 		snake.draw(batch);
+		drawUI();
 		batch.end();
+		stage.draw();
+	}
+	
+	private void drawShadowed(String s, float x, float y, float target, int align) {
+		game.assets.mainFont.setColor(Color.BLACK);
+		for(int i=-1; i<=1; i++) {
+			for(int j=-1; j<=1; j++) {				
+				game.assets.mainFont.draw(batch,s,x+i,y+j,target,align,false);
+			}
+		}
+		game.assets.mainFont.setColor(Color.WHITE);
+		game.assets.mainFont.draw(batch,s,x,y,target,align,false);
 	}
 
 	private void update(float delta) {
 		stage.act(delta);
-		snake.update(delta, stage);							
-	}
+		snake.update(delta, stage);
+		}
+
 
 	@Override
 	public void resize(int width, int height) {
@@ -108,9 +106,14 @@ public class MainScreen extends ScreenAdapter{
 		batch.dispose();
 
 	}
-	
-	
-	
+
+	private void drawUI() {
+		if(gameOver) {
+			drawShadowed("GAME OVER",0,stage.getHeight()/2+Assets.TILE_SIZE,stage.getWidth(),Align.center);
+			stage.addActor(textButton);
+		}
+	}
+
 	private void drawBackground(TextureAtlas atlas) {
 		Sprite roof = atlas.createSprite("wall_up");
 		Sprite wall = atlas.createSprite("wall_left");
@@ -134,6 +137,47 @@ public class MainScreen extends ScreenAdapter{
 			
 		}
 
+	}
+	
+	private void handleInput(int keycode) {
+		switch(keycode) {
+		case Keys.UP:
+			if (lastDirection!=Direction.DOWN && lastDirection!=Direction.UP) {
+				snake.setDirection(Direction.UP);
+				snake.setVel(0,Assets.TILE_SIZE);
+				lastDirection = Direction.UP;
+				snake.changeDir=false;
+			}
+			break;
+		case Keys.DOWN:
+			if (lastDirection!=Direction.UP && lastDirection!=Direction.DOWN) {
+				snake.setDirection(Direction.DOWN);
+				snake.setVel(0,-Assets.TILE_SIZE);
+				lastDirection = Direction.DOWN;
+				snake.changeDir=false;
+			}
+			break;
+		case Keys.LEFT:
+			if (lastDirection!=Direction.RIGHT&& lastDirection!=Direction.LEFT) {
+				snake.setDirection(Direction.LEFT);
+				snake.setVel(-Assets.TILE_SIZE,0);
+				lastDirection = Direction.LEFT;
+				snake.changeDir=false;
+			}
+			break;
+		default:
+			if (lastDirection!=Direction.LEFT && lastDirection!=Direction.RIGHT) {
+				snake.setDirection(Direction.RIGHT);
+				snake.setVel(Assets.TILE_SIZE,0);
+				lastDirection = Direction.RIGHT;
+				snake.changeDir=false;
+			}
+		}
+	}
+
+	@Override
+	public void onGameEnd() {
+		gameOver=true;
 	}
 
 }

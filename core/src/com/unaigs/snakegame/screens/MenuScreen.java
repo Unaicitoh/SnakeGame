@@ -28,9 +28,9 @@ public class MenuScreen extends ScreenAdapter {
 	public void show() {
 		stage = new Stage(new ExtendViewport(Assets.SCREEN_W,Assets.SCREEN_W));
 		Gdx.input.setInputProcessor(stage);
-		skin = game.assets.getMenuUI();
+		skin = game.assets.menuUI;
 		
-		game.assets.getSceneBuilder().build(stage,skin,Gdx.files.internal("menu_skin_main.json"));
+		game.assets.builder.build(stage,skin,Gdx.files.internal("menu_skin_main.json"));
 		
 		TextButton textButton= stage.getRoot().findActor("startButton");
 		textButton.addListener(new ChangeListener() {
