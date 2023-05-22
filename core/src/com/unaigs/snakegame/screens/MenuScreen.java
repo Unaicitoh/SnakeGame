@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -17,7 +16,6 @@ public class MenuScreen extends ScreenAdapter {
 	private SnakeGame game;
 	
 	private Stage stage;
-	private Skin skin;
 	
 	public MenuScreen(SnakeGame game) {
 
@@ -28,9 +26,9 @@ public class MenuScreen extends ScreenAdapter {
 	public void show() {
 		stage = new Stage(new ExtendViewport(Assets.SCREEN_W,Assets.SCREEN_W));
 		Gdx.input.setInputProcessor(stage);
-		skin = game.assets.menuUI;
+
 		
-		game.assets.builder.build(stage,skin,Gdx.files.internal("menu_skin_main.json"));
+		game.assets.builder.build(stage,game.assets.skinUI,Gdx.files.internal("menu_skin_main.json"));
 		
 		TextButton textButton= stage.getRoot().findActor("startButton");
 		textButton.addListener(new ChangeListener() {
@@ -48,7 +46,6 @@ public class MenuScreen extends ScreenAdapter {
 			}
 		});
 	}
-
 
 	@Override
 	public void render(float delta) {
@@ -68,8 +65,6 @@ public class MenuScreen extends ScreenAdapter {
 	public void dispose() {
 		Gdx.input.setInputProcessor(null);
 		stage.dispose();
-		skin.dispose();
 	}
-	
 
 }

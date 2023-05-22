@@ -6,21 +6,21 @@ filter: Nearest, Nearest
 repeat: none
 apple
   rotate: false
-  xy: 94, 20
+  xy: 112, 20
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
   index: -1
 body
   rotate: false
-  xy: 74, 20
+  xy: 92, 20
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
   index: -1
 cherry
   rotate: false
-  xy: 104, 20
+  xy: 42, 2
   size: 8, 8
   orig: 8, 8
   offset: 0, 0
@@ -39,6 +39,13 @@ grass
   orig: 16, 16
   offset: 0, 0
   index: -1
+grass2
+  rotate: false
+  xy: 74, 12
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
 head_down
   rotate: false
   xy: 2, 2
@@ -48,7 +55,7 @@ head_down
   index: -1
 head_left
   rotate: false
-  xy: 84, 20
+  xy: 102, 20
   size: 8, 8
   orig: 8, 8
   offset: 0, 0

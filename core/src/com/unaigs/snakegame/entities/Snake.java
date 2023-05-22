@@ -17,7 +17,7 @@ public class Snake extends Sprite{
 	private Vector2 vel;
 	private HashMap<String,Sprite> parts;
 	private Direction direction = Direction.RIGHT;
-	private static final float MOVE_TIME = .15f;
+	private static final float MOVE_TIME = .2f;
 	private float lastMoveTime;
 	public boolean changeDir=true;
 	private boolean canMove=true;
@@ -45,6 +45,15 @@ public class Snake extends Sprite{
 	
 	public void draw(SpriteBatch batch) {
 		drawSnake(batch);
+	}
+
+	public void update(float delta, Stage stage) {
+		lastMoveTime-=delta;
+		canMove(stage);
+		if(lastMoveTime<=0 && canMove) {
+			moveSnake();
+		}
+		
 	}
 
 	private void drawSnake(SpriteBatch batch) {
@@ -82,15 +91,6 @@ public class Snake extends Sprite{
 			}
 		}
 	
-	public void update(float delta, Stage stage) {
-		lastMoveTime-=delta;
-		canMove(stage);
-		if(lastMoveTime<=0 && canMove) {
-			moveSnake();
-		}
-		
-	}
-
 	private void moveSnake() {
 		lastMoveTime=MOVE_TIME;
 		changeDir=true;

@@ -16,14 +16,14 @@ public class Assets {
 	public static final int SCREEN_W = 960;
 	public static final int SCREEN_H = 640;
 	
-	public Skin menuUI;
+	public Skin skinUI;
 	public SceneComposerStageBuilder builder;
 	public TextureAtlas atlas;
 	public Map<String,Sprite> snakeParts;
 	public BitmapFont mainFont;
 	
 	public Assets() {
-		menuUI= new Skin(Gdx.files.internal("menu_skin.json"));
+		skinUI= new Skin(Gdx.files.internal("menu_skin.json"));
 		builder = new SceneComposerStageBuilder();
 		atlas = new TextureAtlas("SnakeGame.atlas");
 		snakeParts = new HashMap<>();
@@ -36,7 +36,7 @@ public class Assets {
 	}
 	
 	public void dispose() {
-		menuUI.dispose();
+		skinUI.dispose();
 		atlas.dispose();
 		mainFont.dispose();
 	}

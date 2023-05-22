@@ -18,7 +18,6 @@ public class SnakeGame extends Game {
 		assets= new Assets();
 		setScreen(new MenuScreen(this));
 	}
-
 	
 	@Override
 	public void dispose () {

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -29,7 +30,7 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener{
 	private Snake snake;
 	private Direction lastDirection = Direction.RIGHT;
 	private boolean gameOver=false;
-	private TextButton textButton;
+	private Table table;
 
 	public MainScreen(SnakeGame game) {
 		this.game=game;
@@ -38,10 +39,14 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener{
 	@Override
 	public void show() {
 		batch=new SpriteBatch();
-		stage = new Stage(new StretchViewport(36f*Assets.TILE_SIZE, 24f*Assets.TILE_SIZE),batch);
+		stage = new Stage(new StretchViewport(48f*Assets.TILE_SIZE, 36f*Assets.TILE_SIZE),batch);
 		Gdx.input.setInputProcessor(stage);
 		snake=new Snake(game.assets, this);
-		textButton = new TextButton("Restart", game.assets.menuUI);
+		TextButton textButton = new TextButton("RESTART",game.assets.skinUI);
+		table = new Table();
+		table.setFillParent(true);
+		table.add(textButton);
+		table.setDebug(true);
 		textButton.addListener(new ClickListener() {
 
 			@Override
@@ -50,6 +55,7 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener{
 			}
 			
 		});
+
 		stage.addListener(new InputListener() {
 			@Override
 			public boolean keyDown (InputEvent event, int keycode) {
@@ -59,9 +65,6 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener{
 				return false;
 			}
 		});
-
-
-		
 	}
 
 	@Override
@@ -76,9 +79,14 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener{
 		stage.draw();
 	}
 	
+	private void update(float delta) {
+	stage.act(delta);
+	snake.update(delta, stage);
+	}
+
 	private void drawShadowed(String s, float x, float y, float target, int align) {
 		game.assets.mainFont.setColor(Color.BLACK);
-		for(int i=-1; i<=1; i++) {
+		for(int i=-4; i<=1; i++) {
 			for(int j=-1; j<=1; j++) {				
 				game.assets.mainFont.draw(batch,s,x+i,y+j,target,align,false);
 			}
@@ -87,30 +95,10 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener{
 		game.assets.mainFont.draw(batch,s,x,y,target,align,false);
 	}
 
-	private void update(float delta) {
-		stage.act(delta);
-		snake.update(delta, stage);
-		}
-
-
-	@Override
-	public void resize(int width, int height) {
-		stage.getViewport().update(width, height,true);
-	}
-
-
-	@Override
-	public void dispose() {
-		Gdx.input.setInputProcessor(null);
-		stage.dispose();
-		batch.dispose();
-
-	}
-
 	private void drawUI() {
 		if(gameOver) {
 			drawShadowed("GAME OVER",0,stage.getHeight()/2+Assets.TILE_SIZE,stage.getWidth(),Align.center);
-			stage.addActor(textButton);
+			stage.addActor(table);
 		}
 	}
 
@@ -118,10 +106,17 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener{
 		Sprite roof = atlas.createSprite("wall_up");
 		Sprite wall = atlas.createSprite("wall_left");
 		Sprite grass = atlas.createSprite("grass");
+		Sprite grass2 = atlas.createSprite("grass2");
+
 		
 		for(int x=0; x<stage.getWidth(); x+= Assets.TILE_SIZE) {
 			for(int y=0; y<stage.getHeight(); y+=Assets.TILE_SIZE) {
 				batch.draw(grass, x, y, 0, 0, Assets.TILE_SIZE, Assets.TILE_SIZE, 1.01f, 1.01f, 0);
+				if(y>stage.getHeight()-Assets.TILE_SIZE*7 && y<stage.getHeight()-Assets.TILE_SIZE*4  && (x==Assets.TILE_SIZE*4 || x==Assets.TILE_SIZE*5)) {
+					batch.draw(grass2, x, y, 0, 0, Assets.TILE_SIZE, Assets.TILE_SIZE, 1.01f, 1.01f, 0);
+					//TODO modifying if posible grass2 logic creation
+
+				}
 			}
 		}
 		
@@ -178,6 +173,19 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener{
 	@Override
 	public void onGameEnd() {
 		gameOver=true;
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		stage.getViewport().update(width, height,true);
+	}
+
+	@Override
+	public void dispose() {
+		Gdx.input.setInputProcessor(null);
+		stage.dispose();
+		batch.dispose();
+	
 	}
 
 }
