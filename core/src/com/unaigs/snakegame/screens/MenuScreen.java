@@ -8,8 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.unaigs.snakegame.Assets;
 import com.unaigs.snakegame.SnakeGame;
+import com.unaigs.snakegame.data.Assets;
 
 public class MenuScreen extends ScreenAdapter {
 

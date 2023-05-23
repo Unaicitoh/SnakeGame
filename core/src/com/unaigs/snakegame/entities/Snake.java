@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.unaigs.snakegame.Assets;
+import com.unaigs.snakegame.data.Assets;
 
 public class Snake extends Sprite{
 
@@ -17,7 +16,7 @@ public class Snake extends Sprite{
 	private Vector2 vel;
 	private HashMap<String,Sprite> parts;
 	private Direction direction = Direction.RIGHT;
-	private static final float MOVE_TIME = .2f;
+	public float MOVE_TIME = .175f;
 	private float lastMoveTime;
 	public boolean changeDir=true;
 	private boolean canMove=true;
@@ -111,7 +110,6 @@ public class Snake extends Sprite{
 				pos.get(0).x += vel.x;
 
 		}
-		Gdx.app.log("Snake",this.toString());
 	}
 
 	private void canMove(Stage stage) {
@@ -139,11 +137,19 @@ public class Snake extends Sprite{
 		this.direction = direction;
 	}
 
+	public Vector2 getVel() {
+		return vel;
+	}
+
 	public void setVel(float x, float y) {
 		Vector2 velo = new Vector2(x,y);
 		this.vel = velo;
 	}
 
+
+	public List<Vector2> getPos() {
+		return pos;
+	}
 
 	@Override
 	public String toString() {
