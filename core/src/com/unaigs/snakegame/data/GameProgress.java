@@ -38,5 +38,14 @@ public class GameProgress {
 		}
 		
 	}
+
+	public static long getHighscore() {
+		return prefs.getLong(SCORES_KEY+"0");
+				
+	}
+	
+	public static LongArray getScores() {
+		return scores;
+	}
 	
 }

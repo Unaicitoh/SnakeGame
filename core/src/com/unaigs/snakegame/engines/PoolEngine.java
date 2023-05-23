@@ -48,9 +48,15 @@ public class PoolEngine {
 		case 3: 
 			MainScreen.score+=250;
 			snake.MOVE_TIME-=.025f;
+			if(snake.MOVE_TIME<.05f) {
+				snake.MOVE_TIME=.05f;
+			}
 			break;
 		case 2:
-			MainScreen.score+=150;
+			MainScreen.score-=50;
+			if(MainScreen.score<0) {
+				MainScreen.score=0;
+			}
 			snake.MOVE_TIME=.175f;
 			break;
 		default:

@@ -36,10 +36,10 @@ public class Food extends Sprite implements Poolable{
 		int type = MathUtils.random(9);
 		if(type<9) {
 			int rnd = MathUtils.random(9);
-			if(rnd<4) {
+			if(rnd<5) {
 				this.type=0;
 				set(assets.atlas.createSprite("apple"));
-			}else if(rnd<8) {
+			}else if(rnd<9) {
 				this.type=1;
 				set(assets.atlas.createSprite("cherry"));
 			}else{

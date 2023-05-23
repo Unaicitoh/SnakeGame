@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.unaigs.snakegame.data.Assets;
+import com.unaigs.snakegame.util.Direction;
 
 public class Snake extends Sprite{
 

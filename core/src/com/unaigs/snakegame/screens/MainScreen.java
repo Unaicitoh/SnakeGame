@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -22,11 +23,11 @@ import com.unaigs.snakegame.SnakeGame;
 import com.unaigs.snakegame.data.Assets;
 import com.unaigs.snakegame.data.GameProgress;
 import com.unaigs.snakegame.engines.PoolEngine;
-import com.unaigs.snakegame.entities.Direction;
 import com.unaigs.snakegame.entities.Food;
 import com.unaigs.snakegame.entities.Food.FoodGameListener;
 import com.unaigs.snakegame.entities.Snake;
 import com.unaigs.snakegame.entities.Snake.SnakeMovementListener;
+import com.unaigs.snakegame.util.Direction;
 
 public class MainScreen extends ScreenAdapter implements SnakeMovementListener, FoodGameListener{
 	
@@ -36,14 +37,18 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 	private Snake snake;
 	private Table table;
 	private PoolEngine pool;
-	public static long score;
 	
 	private boolean gameOver=false;
 	private static final float FOOD_SPAWN=2f;
 	private static final int MAX_FOOD=10;
+	private static final String MAIN_FONT = "main";
+	private static final String SCORE_FONT = "score";
+
 	private float lastFoodSpawn;
 	private float gameTime;
 	private Direction lastDirection = Direction.RIGHT;
+	public static long score;
+	private boolean highscore;
 	
 	public MainScreen(SnakeGame game) {
 		this.game=game;
@@ -57,6 +62,8 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 		gameTime=0;
 		lastFoodSpawn=0;
 		score=0;
+		highscore=false;
+		GameProgress.load();
 		Gdx.input.setInputProcessor(stage);
 		snake=new Snake(game.assets, this);
 		TextButton textButton = new TextButton("RESTART",game.assets.skinUI);
@@ -72,7 +79,7 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 		});
 		table = new Table();
 		table.setFillParent(true);
-		table.align(Align.bottom).padBottom(25);
+		table.align(Align.bottom).padBottom(15);
 		table.add(textButton).width(100).height(35).fillX();
 		textButton = new TextButton("BACK TO MENU",game.assets.skinUI);
 		textButton.setTransform(true);
@@ -153,21 +160,40 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 		
 	}
 
-	private void drawShadowed(String s, float x, float y, float target, int align) {
-		game.assets.mainFont.setColor(Color.BLACK);
-		for(int i=-4; i<=1; i++) {
-			for(int j=-1; j<=1; j++) {
-				game.assets.mainFont.draw(batch,s,x+i,y+j,target,align,false);
+	private void drawShadowed(String s, float x, float y, float target, int align, String fontName) {
+		BitmapFont font= new BitmapFont();
+		if(fontName.equalsIgnoreCase(MAIN_FONT)) {
+			font=game.assets.mainFont;
+			font.setColor(Color.BLACK);
+
+			for(int i=-4; i<=1; i++) {
+				for(int j=-1; j<=1; j++) {
+					font.draw(batch,s,x+i,y+j,target,align,false);
+				}
+			}
+		}else {
+			font=game.assets.scoreFont;
+			font.setColor(Color.BLACK);
+
+			for(int i=-1; i<=1; i++) {
+				for(int j=-1; j<=1; j++) {
+					font.draw(batch,s,x+i,y+j,target,align,false);
+				}
 			}
 		}
-		game.assets.mainFont.setColor(Color.WHITE);
-		game.assets.mainFont.draw(batch,s,x,y,target,align,false);
+		
+		font.setColor(Color.WHITE);
+		font.draw(batch,s,x,y,target,align,false);
 	}
 
 	private void drawUI() {
+		drawShadowed(""+score, 0, stage.getHeight()-Assets.TILE_SIZE/2, stage.getWidth()-Assets.TILE_SIZE/3,Align.right, SCORE_FONT);
 		if(gameOver) {
-			drawShadowed("GAME OVER",0,stage.getHeight()*2/3+Assets.TILE_SIZE,stage.getWidth(),Align.center);
+			drawShadowed("GAME OVER",0,stage.getHeight()*2/3+Assets.TILE_SIZE,stage.getWidth(),Align.center,MAIN_FONT);
 			stage.addActor(table);
+			if(highscore) {
+				drawShadowed("NEW RECORD! "+score,0,stage.getHeight()/2+Assets.TILE_SIZE,stage.getWidth(),Align.center,SCORE_FONT);
+			}
 		}
 	}
 
@@ -245,8 +271,11 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 	@Override
 	public void onGameEnd() {
 		gameOver=true;
-		Gdx.app.log("SCORE", ""+score);
+		if(GameProgress.getHighscore()<score) {
+			highscore=true;
+		}
 		GameProgress.save(score);
+		
 		
 	}
 

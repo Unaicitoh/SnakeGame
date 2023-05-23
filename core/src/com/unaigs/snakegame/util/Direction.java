@@ -1,4 +1,4 @@
-package com.unaigs.snakegame.entities;
+package com.unaigs.snakegame.util;
 
 public enum Direction {
 	UP,

@@ -21,6 +21,8 @@ public class Assets {
 	public TextureAtlas atlas;
 	public Map<String,Sprite> snakeParts;
 	public BitmapFont mainFont;
+	public BitmapFont scoreFont;
+
 	
 	public Assets() {
 		skinUI= new Skin(Gdx.files.internal("menu_skin.json"));
@@ -33,6 +35,8 @@ public class Assets {
 		snakeParts.put("head_down", atlas.createSprite("head_down"));
 		snakeParts.put("body", atlas.createSprite("body"));
 		mainFont= new BitmapFont(Gdx.files.internal("mainFont.fnt"));
+		scoreFont= new BitmapFont(Gdx.files.internal("scoreFont.fnt"));
+
 	}
 	
 	public void dispose() {
