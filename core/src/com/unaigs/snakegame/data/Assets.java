@@ -22,6 +22,8 @@ public class Assets {
 	public Map<String,Sprite> snakeParts;
 	public BitmapFont mainFont;
 	public BitmapFont scoreFont;
+	public BitmapFont scoresFont;
+
 
 	
 	public Assets() {
@@ -36,6 +38,7 @@ public class Assets {
 		snakeParts.put("body", atlas.createSprite("body"));
 		mainFont= new BitmapFont(Gdx.files.internal("mainFont.fnt"));
 		scoreFont= new BitmapFont(Gdx.files.internal("scoreFont.fnt"));
+		scoresFont= new BitmapFont(Gdx.files.internal("scoresFont.fnt"));
 
 	}
 	

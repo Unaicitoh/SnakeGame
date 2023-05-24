@@ -3,8 +3,6 @@ package com.unaigs.snakegame.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -28,6 +26,7 @@ import com.unaigs.snakegame.entities.Food.FoodGameListener;
 import com.unaigs.snakegame.entities.Snake;
 import com.unaigs.snakegame.entities.Snake.SnakeMovementListener;
 import com.unaigs.snakegame.util.Direction;
+import com.unaigs.snakegame.util.FontHelper;
 
 public class MainScreen extends ScreenAdapter implements SnakeMovementListener, FoodGameListener{
 	
@@ -37,12 +36,11 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 	private Snake snake;
 	private Table table;
 	private PoolEngine pool;
-	
+	private FontHelper fhelper;
 	private boolean gameOver=false;
 	private static final float FOOD_SPAWN=2f;
 	private static final int MAX_FOOD=10;
-	private static final String MAIN_FONT = "main";
-	private static final String SCORE_FONT = "score";
+
 
 	private float lastFoodSpawn;
 	private float gameTime;
@@ -52,11 +50,13 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 	
 	public MainScreen(SnakeGame game) {
 		this.game=game;
+
 	}
 	
 	@Override
 	public void show() {
 		batch=new SpriteBatch();
+		fhelper= new FontHelper(game, batch);
 		stage = new Stage(new FitViewport(36f*Assets.TILE_SIZE, 24f*Assets.TILE_SIZE),batch);
 		pool= new PoolEngine(game);
 		gameTime=0;
@@ -160,39 +160,14 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 		
 	}
 
-	private void drawShadowed(String s, float x, float y, float target, int align, String fontName) {
-		BitmapFont font= new BitmapFont();
-		if(fontName.equalsIgnoreCase(MAIN_FONT)) {
-			font=game.assets.mainFont;
-			font.setColor(Color.BLACK);
-
-			for(int i=-4; i<=1; i++) {
-				for(int j=-1; j<=1; j++) {
-					font.draw(batch,s,x+i,y+j,target,align,false);
-				}
-			}
-		}else {
-			font=game.assets.scoreFont;
-			font.setColor(Color.BLACK);
-
-			for(int i=-1; i<=1; i++) {
-				for(int j=-1; j<=1; j++) {
-					font.draw(batch,s,x+i,y+j,target,align,false);
-				}
-			}
-		}
-		
-		font.setColor(Color.WHITE);
-		font.draw(batch,s,x,y,target,align,false);
-	}
 
 	private void drawUI() {
-		drawShadowed(""+score, 0, stage.getHeight()-Assets.TILE_SIZE/2, stage.getWidth()-Assets.TILE_SIZE/3,Align.right, SCORE_FONT);
+		fhelper.drawShadowed(""+score, 0, stage.getHeight()-Assets.TILE_SIZE/2, stage.getWidth()-Assets.TILE_SIZE/3,Align.right, fhelper.SCORE_FONT);
 		if(gameOver) {
-			drawShadowed("GAME OVER",0,stage.getHeight()*2/3+Assets.TILE_SIZE,stage.getWidth(),Align.center,MAIN_FONT);
+			fhelper.drawShadowed("GAME OVER",0,stage.getHeight()*2/3+Assets.TILE_SIZE,stage.getWidth(),Align.center,fhelper.MAIN_FONT);
 			stage.addActor(table);
 			if(highscore) {
-				drawShadowed("NEW RECORD! "+score,0,stage.getHeight()/2+Assets.TILE_SIZE,stage.getWidth(),Align.center,SCORE_FONT);
+				fhelper.drawShadowed("NEW RECORD! "+score,0,stage.getHeight()/2+Assets.TILE_SIZE,stage.getWidth(),Align.center,fhelper.SCORE_FONT);
 			}
 		}
 	}

@@ -38,6 +38,14 @@ public class GameProgress {
 		}
 		
 	}
+	
+	public static void reset() {
+		prefs=Gdx.app.getPreferences(PREFERENCES_NAME);
+			for(int i=0; i<5; i++) {
+				scores.set(i,0);
+				prefs.putLong(SCORES_KEY+i, 0);
+		}
+	}
 
 	public static long getHighscore() {
 		return prefs.getLong(SCORES_KEY+"0");
