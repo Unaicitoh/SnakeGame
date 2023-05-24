@@ -12,7 +12,8 @@ public class GameProgress {
 	private static final String PREFERENCES_NAME="snake_progress";
 	
 	private static final String SCORES_KEY="score";
-
+	
+	private GameProgress() {}
 	
 	public static void save(long score) {
 		prefs=Gdx.app.getPreferences(PREFERENCES_NAME);
@@ -45,6 +46,7 @@ public class GameProgress {
 				scores.set(i,0);
 				prefs.putLong(SCORES_KEY+i, 0);
 		}
+		prefs.flush();
 	}
 
 	public static long getHighscore() {

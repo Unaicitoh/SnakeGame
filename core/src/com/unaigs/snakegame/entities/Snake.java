@@ -17,13 +17,13 @@ public class Snake extends Sprite{
 	private Vector2 vel;
 	private HashMap<String,Sprite> parts;
 	private Direction direction = Direction.RIGHT;
-	public float MOVE_TIME = .175f;
+	public static float MOVE_TIME = .175f;
 	private float lastMoveTime;
 	public boolean changeDir=true;
 	private boolean canMove=true;
 	private Vector2 eatenPart;
-	SnakeMovementListener listener;
 	private Sprite head;
+	SnakeMovementListener listener;
 
 	public interface SnakeMovementListener {
 		void onGameEnd();
@@ -62,16 +62,16 @@ public class Snake extends Sprite{
 			if(i==0) {
 				switch(direction) {
 				case UP:
-					head=parts.get("head_up");
+					head=parts.get(Assets.SNAKE_HEAD_UP);
 					break;
 				case DOWN:
-					head=parts.get("head_down");
+					head=parts.get(Assets.SNAKE_HEAD_DOWN);
 					break;
 				case RIGHT:
-					head=parts.get("head_right");
+					head=parts.get(Assets.SNAKE_HEAD_RIGHT);
 					break;
 				default:
-					head=parts.get("head_left");
+					head=parts.get(Assets.SNAKE_HEAD_LEFT);
 
 				}
 					set(head);
@@ -83,7 +83,7 @@ public class Snake extends Sprite{
 						set(head);
 						setPosition(eatenPart.x,eatenPart.y);
 					}else {
-						set(parts.get("body"));						
+						set(parts.get(Assets.SNAKE_BODY));						
 						setPosition(pos.get(i).x, pos.get(i).y);
 					}
 					super.draw(batch);
@@ -94,6 +94,7 @@ public class Snake extends Sprite{
 	private void moveSnake() {
 		lastMoveTime=MOVE_TIME;
 		changeDir=true;
+		
 		for(int i=pos.size()-1; i>0; i--) {
 			pos.get(i).set(pos.get(i-1));
 		}

@@ -9,14 +9,6 @@
 					"name": null,
 					"children": [
 						{
-							"class": "Image",
-							"name": null,
-							"drawable": "backgroundgreen",
-							"scaling": "stretch",
-							"touchable": "enabled",
-							"visible": true
-						},
-						{
 							"class": "Table",
 							"cells": [
 								{
@@ -30,8 +22,8 @@
 									},
 									"row": 0,
 									"column": 0,
-									"padLeft": 100,
-									"padRight": 100,
+									"padLeft": 0,
+									"padRight": 0,
 									"padTop": 0,
 									"padBottom": 0,
 									"spaceLeft": 0,
@@ -97,7 +89,7 @@
 										"padBottom": 0,
 										"reverse": false,
 										"rowAlignment": 1,
-										"space": 200,
+										"space": 300,
 										"wrap": false,
 										"wrapSpace": 0,
 										"children": [

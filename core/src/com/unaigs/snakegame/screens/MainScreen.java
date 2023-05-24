@@ -3,6 +3,7 @@ package com.unaigs.snakegame.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -47,6 +48,7 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 	private Direction lastDirection = Direction.RIGHT;
 	public static long score;
 	private boolean highscore;
+	private long id=0;
 	
 	public MainScreen(SnakeGame game) {
 		this.game=game;
@@ -55,13 +57,15 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 	
 	@Override
 	public void show() {
+		id = game.assets.sounds.get(Assets.SNAKE_INTRO_S).play();
+		
 		batch=new SpriteBatch();
 		fhelper= new FontHelper(game, batch);
 		stage = new Stage(new FitViewport(36f*Assets.TILE_SIZE, 24f*Assets.TILE_SIZE),batch);
 		pool= new PoolEngine(game);
+		score=0;
 		gameTime=0;
 		lastFoodSpawn=0;
-		score=0;
 		highscore=false;
 		GameProgress.load();
 		Gdx.input.setInputProcessor(stage);
@@ -104,6 +108,7 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 				return false;
 			}
 		});
+				
 	}
 
 	@Override
@@ -133,6 +138,8 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 	}
 
 	private void spawnFood() {
+		id=game.assets.sounds.get(Assets.SPAWN_EFFECT_S).play();
+		game.assets.sounds.get(Assets.SPAWN_EFFECT_S).setVolume(id, .3f);
 		boolean emptyTile=false;
 		int x =0;
 		int y=0;
@@ -154,7 +161,9 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 		}while(!emptyTile);
 		
 		if(emptyTile) {			
-			Food.create(new Vector2(x,y),pool,this, game.assets);	
+			Food.create(new Vector2(x,y),pool,this, game.assets);
+			
+
 			lastFoodSpawn=gameTime;
 		}
 		
@@ -162,12 +171,13 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 
 
 	private void drawUI() {
-		fhelper.drawShadowed(""+score, 0, stage.getHeight()-Assets.TILE_SIZE/2, stage.getWidth()-Assets.TILE_SIZE/3,Align.right, fhelper.SCORE_FONT);
+		String scoreStr= String.format("%07d", score);
+		fhelper.drawShadowed(scoreStr, 0, stage.getHeight()-Assets.TILE_SIZE/2, stage.getWidth()-Assets.TILE_SIZE/3,Align.right, FontHelper.SCORE_FONT,Color.BLACK);
 		if(gameOver) {
-			fhelper.drawShadowed("GAME OVER",0,stage.getHeight()*2/3+Assets.TILE_SIZE,stage.getWidth(),Align.center,fhelper.MAIN_FONT);
+			fhelper.drawShadowed("GAME OVER",0,stage.getHeight()*2/3+Assets.TILE_SIZE,stage.getWidth(),Align.center,FontHelper.MAIN_FONT,Color.BLACK);
 			stage.addActor(table);
 			if(highscore) {
-				fhelper.drawShadowed("NEW RECORD! "+score,0,stage.getHeight()/2+Assets.TILE_SIZE,stage.getWidth(),Align.center,fhelper.SCORE_FONT);
+				fhelper.drawShadowed("NEW RECORD! "+score,0,stage.getHeight()/2+Assets.TILE_SIZE,stage.getWidth(),Align.center,FontHelper.SCORE_FONT,Color.BLACK);
 			}
 		}
 	}
@@ -208,6 +218,7 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 	}
 	
 	private void handleInput(int keycode) {
+		long idSnake=0;
 		switch(keycode) {
 		case Keys.UP:
 			if (lastDirection!=Direction.DOWN && lastDirection!=Direction.UP) {
@@ -215,6 +226,8 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 				snake.setVel(0,Assets.TILE_SIZE);
 				lastDirection = Direction.UP;
 				snake.changeDir=false;
+				idSnake=game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play();
+				game.assets.sounds.get(Assets.SPAWN_EFFECT_S).setVolume(idSnake, .3f);
 			}
 			break;
 		case Keys.DOWN:
@@ -223,6 +236,9 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 				snake.setVel(0,-Assets.TILE_SIZE);
 				lastDirection = Direction.DOWN;
 				snake.changeDir=false;
+				idSnake=game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play();
+				game.assets.sounds.get(Assets.SPAWN_EFFECT_S).setVolume(idSnake, .3f);
+
 			}
 			break;
 		case Keys.LEFT:
@@ -231,6 +247,9 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 				snake.setVel(-Assets.TILE_SIZE,0);
 				lastDirection = Direction.LEFT;
 				snake.changeDir=false;
+				idSnake=game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play();
+				game.assets.sounds.get(Assets.SPAWN_EFFECT_S).setVolume(idSnake, .3f);
+
 			}
 			break;
 		default:
@@ -239,13 +258,20 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 				snake.setVel(Assets.TILE_SIZE,0);
 				lastDirection = Direction.RIGHT;
 				snake.changeDir=false;
+				idSnake=game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play();
+				game.assets.sounds.get(Assets.SPAWN_EFFECT_S).setVolume(idSnake, .3f);
+
+
 			}
 		}
 	}
 
 	@Override
 	public void onGameEnd() {
+		game.assets.sounds.get(Assets.SNAKE_INTRO_S).stop(id);
 		gameOver=true;
+		id=game.assets.sounds.get(Assets.GAME_OVER_S).play();
+
 		if(GameProgress.getHighscore()<score) {
 			highscore=true;
 		}
@@ -265,7 +291,6 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 		pool.clear();
 		batch.dispose();
 		stage.dispose();
-	
 	}
 
 	@Override

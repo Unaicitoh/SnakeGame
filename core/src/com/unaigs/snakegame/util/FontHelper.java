@@ -9,9 +9,9 @@ public class FontHelper {
 
 	public SnakeGame game;
 	public SpriteBatch batch;
-	public final String MAIN_FONT = "main";
-	public final String SCORE_FONT = "score";
-	public final String SCORES_FONT = "scores";
+	public static final String MAIN_FONT = "main";
+	public static final String SCORE_FONT = "score";
+	public static final String SCORES_FONT = "scores";
 
 
 	public FontHelper(SnakeGame game, SpriteBatch batch) {
@@ -19,19 +19,19 @@ public class FontHelper {
 		this.batch=batch;
 	}
 	
-	public void drawShadowed(String s, float x, float y, float target, int align, String fontName) {
+	public void drawShadowed(String s, float x, float y, float target, int align, String fontName, Color color) {
 		BitmapFont font= new BitmapFont();
 		if(fontName.equalsIgnoreCase(MAIN_FONT)){
 			font=game.assets.mainFont;
-			font.setColor(Color.BLACK);
+			font.setColor(color);
 			drawOutline(s, x, y, target, align,4,font);
 		}else if(fontName.equalsIgnoreCase(SCORE_FONT)){
 			font=game.assets.scoreFont;
-			font.setColor(Color.BLACK);
+			font.setColor(color);
 			drawOutline(s, x, y, target, align,1,font);
 		}else {
 			font=game.assets.scoresFont;
-			font.setColor(Color.BLACK);
+			font.setColor(color);
 			drawOutline(s, x, y, target, align,8,font);
 		}
 		font.setColor(Color.WHITE);

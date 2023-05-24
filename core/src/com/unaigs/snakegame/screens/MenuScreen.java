@@ -2,20 +2,22 @@ package com.unaigs.snakegame.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.unaigs.snakegame.SnakeGame;
-import com.unaigs.snakegame.data.Assets;
+import com.unaigs.snakegame.util.ModalDialog;
 
 public class MenuScreen extends ScreenAdapter {
 
 	private SnakeGame game;
 	
 	private Stage stage;
+	private ModalDialog dia;
 	
 	public MenuScreen(SnakeGame game) {
 
@@ -24,9 +26,8 @@ public class MenuScreen extends ScreenAdapter {
 	
 	@Override
 	public void show() {
-		stage = new Stage(new ExtendViewport(Assets.SCREEN_W,Assets.SCREEN_W));
+		stage = new Stage(new ScreenViewport());
 		Gdx.input.setInputProcessor(stage);
-
 		
 		game.assets.builder.build(stage,game.assets.skinUI,Gdx.files.internal("menu_skin_main.json"));
 		
@@ -50,14 +51,32 @@ public class MenuScreen extends ScreenAdapter {
 		textButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
-				Gdx.app.exit();
+					dia = (ModalDialog) new ModalDialog("Quitting...", game.assets.skinUI) {
+
+						{
+							setColor(Color.BLACK);
+							padTop(60);
+							getTitleLabel().setFontScale(1.25f);
+							text("Are you sure you want to exit SNAKE?");
+							button("Yes, exit", true);
+							button("No, keep playing", false);
+						}
+						
+						@Override
+						protected void result(Object object) {
+							if((boolean) object) {
+								Gdx.app.exit();
+							}
+						}
+						
+					}.show(stage);
 			}
 		});
 	}
 
 	@Override
 	public void render(float delta) {
-		ScreenUtils.clear(0,0,0,1);
+		ScreenUtils.clear(0,.29f,0,1);
 		stage.act(delta);
 		stage.draw();
 		
@@ -65,6 +84,9 @@ public class MenuScreen extends ScreenAdapter {
 
 	@Override
 	public void resize(int width, int height) {
+		if(dia!=null) {
+			dia.setSize(200f, 100f);
+		}
 		stage.getViewport().update(width, height,true);
 	}
 

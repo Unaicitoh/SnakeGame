@@ -6,6 +6,7 @@ import java.util.List;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.unaigs.snakegame.SnakeGame;
+import com.unaigs.snakegame.data.Assets;
 import com.unaigs.snakegame.entities.Food;
 import com.unaigs.snakegame.entities.Snake;
 import com.unaigs.snakegame.screens.MainScreen;
@@ -13,8 +14,10 @@ import com.unaigs.snakegame.screens.MainScreen;
 public class PoolEngine {
 
 	public List<Food> food;
+	private SnakeGame game;
 	
 	public PoolEngine(SnakeGame game) {
+		this.game=game;
 		food=new ArrayList<>();
 	}
 	
@@ -31,7 +34,7 @@ public class PoolEngine {
 			for(Vector2 pos :snake.getPos()) {
 				if(food.get(i).getPos().x==pos.x && food.get(i).getPos().y==pos.y) {
 					food.get(i).setAlive(false);
-					checkRewards(food.get(i), snake);
+					checkRewards(food.get(i));
 				}
 			}
 			if(!food.get(i).isAlive()) {
@@ -42,24 +45,32 @@ public class PoolEngine {
 		}
 	}
 	
-	private void checkRewards(Food food, Snake snake) {
-
+	private void checkRewards(Food food) {
+		@SuppressWarnings("unused")
+		long id;
 		switch(food.getType()) {
-		case 3: 
+		case 3:
+			id = game.assets.sounds.get(Assets.RABBIT_EFFECT_S).play();
 			MainScreen.score+=250;
-			snake.MOVE_TIME-=.025f;
-			if(snake.MOVE_TIME<.05f) {
-				snake.MOVE_TIME=.05f;
+			Snake.MOVE_TIME-=.025f;
+			if(Snake.MOVE_TIME<.05f) {
+				Snake.MOVE_TIME=.05f;
 			}
 			break;
 		case 2:
+			id = game.assets.sounds.get(Assets.COOKIE_EFFECT_S).play();
+			game.assets.sounds.get(Assets.SPAWN_EFFECT_S).setVolume(id, .3f);
+
 			MainScreen.score-=50;
 			if(MainScreen.score<0) {
 				MainScreen.score=0;
 			}
-			snake.MOVE_TIME=.175f;
+			Snake.MOVE_TIME=.175f;
 			break;
 		default:
+			id = game.assets.sounds.get(Assets.FRUIT_EFFECT_S).play();
+			game.assets.sounds.get(Assets.FRUIT_EFFECT_S).setVolume(id, .25f);
+
 			MainScreen.score+=50;
 		}
 		

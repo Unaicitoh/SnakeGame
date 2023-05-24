@@ -33,8 +33,8 @@ public class Food extends Sprite implements Poolable{
 		this.listener=listener;
 		this.pos.set(pos);
 		alive=true;
-		int type = MathUtils.random(9);
-		if(type<9) {
+		int foodType = MathUtils.random(9);
+		if(foodType<9) {
 			int rnd = MathUtils.random(9);
 			if(rnd<5) {
 				this.type=0;
