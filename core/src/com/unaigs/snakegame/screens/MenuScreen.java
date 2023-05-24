@@ -5,19 +5,19 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.unaigs.snakegame.SnakeGame;
-import com.unaigs.snakegame.util.ModalDialog;
+import com.unaigs.snakegame.data.Assets;
 
 public class MenuScreen extends ScreenAdapter {
 
 	private SnakeGame game;
 	
 	private Stage stage;
-	private ModalDialog dia;
 	
 	public MenuScreen(SnakeGame game) {
 
@@ -26,7 +26,7 @@ public class MenuScreen extends ScreenAdapter {
 	
 	@Override
 	public void show() {
-		stage = new Stage(new ScreenViewport());
+		stage = new Stage(new FitViewport(Assets.SCREEN_W,Assets.SCREEN_H));
 		Gdx.input.setInputProcessor(stage);
 		
 		game.assets.builder.build(stage,game.assets.skinUI,Gdx.files.internal("menu_skin_main.json"));
@@ -51,8 +51,7 @@ public class MenuScreen extends ScreenAdapter {
 		textButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
-					dia = (ModalDialog) new ModalDialog("Quitting...", game.assets.skinUI) {
-
+					new Dialog("Quitting...", game.assets.skinUI) {
 						{
 							setColor(Color.BLACK);
 							padTop(60);
@@ -70,13 +69,14 @@ public class MenuScreen extends ScreenAdapter {
 						}
 						
 					}.show(stage);
+
 			}
 		});
 	}
 
 	@Override
 	public void render(float delta) {
-		ScreenUtils.clear(0,.29f,0,1);
+		ScreenUtils.clear(0,0,0,1);
 		stage.act(delta);
 		stage.draw();
 		
@@ -84,9 +84,6 @@ public class MenuScreen extends ScreenAdapter {
 
 	@Override
 	public void resize(int width, int height) {
-		if(dia!=null) {
-			dia.setSize(200f, 100f);
-		}
 		stage.getViewport().update(width, height,true);
 	}
 
