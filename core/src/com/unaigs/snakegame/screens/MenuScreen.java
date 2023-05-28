@@ -5,6 +5,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -27,7 +28,6 @@ public class MenuScreen extends ScreenAdapter {
 	@Override
 	public void show() {
 		stage = new Stage(new FitViewport(Assets.SCREEN_W,Assets.SCREEN_H));
-		Gdx.input.setInputProcessor(stage);
 		
 		game.assets.builder.build(stage,game.assets.skinUI,Gdx.files.internal("menu_skin_main.json"));
 		
@@ -35,6 +35,8 @@ public class MenuScreen extends ScreenAdapter {
 		textButton.addListener(new ChangeListener() {
 			@Override
 			public void changed (ChangeEvent event, Actor actor) {
+				game.assets.music.stop();
+				game.assets.sounds.get(Assets.GAME_START_S).play(.3f);
 				game.setScreen(new MainScreen(game));
 			}
 		});
@@ -72,7 +74,16 @@ public class MenuScreen extends ScreenAdapter {
 
 			}
 		});
-	}
+
+		stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(1.5f), Actions.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				Gdx.input.setInputProcessor(stage);
+			}
+		})));
+		
+	}	
 
 	@Override
 	public void render(float delta) {

@@ -19,6 +19,9 @@ public class SnakeGame extends Game {
 		Gdx.app.log("START", "RUNNING GAME");
 		assets= new Assets();
 		GameProgress.load();
+		assets.music.play();
+		assets.music.setLooping(true);
+		assets.music.setVolume(.5f);
 		setScreen(new MenuScreen(this));
 	}
 	

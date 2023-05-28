@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -29,7 +30,7 @@ public class Assets {
 	public static final String RABBIT_EFFECT_S = "rabbit_effect_s";
 	public static final String FRUIT_EFFECT_S = "fruit_effect_s";
 	public static final String COOKIE_EFFECT_S = "cookie_effect_s";
-
+	public static final String GAME_START_S = "gameStart_s";
 	
 	public Skin skinUI;
 	public SceneComposerStageBuilder builder;
@@ -39,7 +40,7 @@ public class Assets {
 	public BitmapFont scoreFont;
 	public BitmapFont scoresFont;
 	public ArrayMap<String, Sound> sounds;
-
+	public Music music;
 	
 	public Assets() {
 		skinUI= new Skin(Gdx.files.internal("menu_skin.json"));
@@ -62,18 +63,22 @@ public class Assets {
 		sounds.put(RABBIT_EFFECT_S, Gdx.audio.newSound(Gdx.files.internal("rabbit_sound.mp3")));
 		sounds.put(FRUIT_EFFECT_S, Gdx.audio.newSound(Gdx.files.internal("fruit_sound.mp3")));
 		sounds.put(COOKIE_EFFECT_S, Gdx.audio.newSound(Gdx.files.internal("cookie_sound.mp3")));
+		sounds.put(GAME_START_S, Gdx.audio.newSound(Gdx.files.internal("gameStart.mp3")));
+
+		music = Gdx.audio.newMusic(Gdx.files.internal("intro_music.mp3"));
 
 	}
 	
 	public void dispose() {
-		sounds.forEach(sound->
-			sound.value.dispose()
-		);
+		for(int i=0; i<sounds.size; i++) {
+			sounds.getValueAt(i).dispose();
+		}
 		skinUI.dispose();
 		atlas.dispose();
 		mainFont.dispose();
 		scoreFont.dispose();
 		scoresFont.dispose();
+		music.dispose();
 	}
 	
 }

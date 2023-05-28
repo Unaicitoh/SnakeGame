@@ -39,6 +39,7 @@ public class FontHelper {
 	}
 
 	private void drawOutline(String s, float x, float y, float target, int align, int outlineWidth, BitmapFont font) {
+		
 		for(int i=-outlineWidth; i<=1; i++) {
 			for(int j=-1; j<=1; j++) {
 				font.draw(batch,s,x+i,y+j,target,align,false);

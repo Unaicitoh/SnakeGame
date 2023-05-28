@@ -58,8 +58,7 @@ public class PoolEngine {
 			}
 			break;
 		case 2:
-			id = game.assets.sounds.get(Assets.COOKIE_EFFECT_S).play();
-			game.assets.sounds.get(Assets.SPAWN_EFFECT_S).setVolume(id, .3f);
+			id = game.assets.sounds.get(Assets.COOKIE_EFFECT_S).play(.3f);
 
 			MainScreen.score-=50;
 			if(MainScreen.score<0) {
@@ -68,8 +67,7 @@ public class PoolEngine {
 			Snake.MOVE_TIME=.175f;
 			break;
 		default:
-			id = game.assets.sounds.get(Assets.FRUIT_EFFECT_S).play();
-			game.assets.sounds.get(Assets.FRUIT_EFFECT_S).setVolume(id, .25f);
+			id = game.assets.sounds.get(Assets.FRUIT_EFFECT_S).play(.25f);
 
 			MainScreen.score+=50;
 		}

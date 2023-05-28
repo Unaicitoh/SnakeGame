@@ -36,6 +36,7 @@ public class Snake extends Sprite{
 		pos=new ArrayList<>();
 		vel = new Vector2(Assets.TILE_SIZE,Assets.TILE_SIZE);
 		parts = (HashMap<String, Sprite>) assets.snakeParts;
+		MOVE_TIME = .175f;
 		lastMoveTime=MOVE_TIME;
 		for(int i =5; i>=1 ; i--) {
 			pos.add(new Vector2((float)i*Assets.TILE_SIZE+Assets.TILE_SIZE, Assets.TILE_SIZE*2f));

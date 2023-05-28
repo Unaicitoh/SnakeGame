@@ -41,15 +41,19 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 	private boolean gameOver=false;
 	private static final float FOOD_SPAWN=2f;
 	private static final int MAX_FOOD=10;
+	private float shakeTime=1.5f;
 
 
 	private float lastFoodSpawn;
 	private float gameTime;
 	private Direction lastDirection = Direction.RIGHT;
 	public static long score;
+	public static float visualScore;
 	private boolean highscore;
 	private long id=0;
-	
+	protected boolean fadeOut=false;
+	protected float fadeOutDuration=1f;
+	float t=1;
 	public MainScreen(SnakeGame game) {
 		this.game=game;
 
@@ -64,6 +68,7 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 		stage = new Stage(new FitViewport(36f*Assets.TILE_SIZE, 24f*Assets.TILE_SIZE),batch);
 		pool= new PoolEngine(game);
 		score=0;
+		visualScore=score;
 		gameTime=0;
 		lastFoodSpawn=0;
 		highscore=false;
@@ -94,7 +99,10 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 			
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
-				game.setScreen(new MenuScreen(game));
+				fadeOut=true;
+				Gdx.input.setInputProcessor(null);
+				if(!game.assets.music.isPlaying()) game.assets.music.play();
+
 			}
 			
 		});
@@ -108,20 +116,28 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 				return false;
 			}
 		});
-				
 	}
 
 	@Override
 	public void render(float delta) {
+
 		ScreenUtils.clear(0,0,0,1);
 		update(delta);
+		if(fadeOut) {
+			t-=delta;
+			batch.setColor(1,1,1,Math.max(0, t));
+			if(t<0) game.setScreen(new MenuScreen(game));
+			table.setVisible(false);
+		}
 		batch.begin();
 		drawBackground(game.assets.atlas);
 		pool.draw(batch);
 		snake.draw(batch);
-		drawUI();
+		drawUI(delta);
 		batch.end();
 		stage.draw();
+		batch.setColor(1,1,1,1);
+
 	}
 	
 	private void update(float delta) {
@@ -130,7 +146,12 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 			stage.act(delta);
 			snake.update(delta, stage);
 			pool.update(snake);
-			
+			float deltaTime=Math.min(delta, 1/60f);
+			if(score>visualScore) {
+				visualScore = Math.min(score, visualScore+100*deltaTime);
+			}else if(visualScore>score) {
+				visualScore = Math.max(score, visualScore-100*deltaTime);
+			}
 			if(gameTime>lastFoodSpawn+FOOD_SPAWN && pool.food.size()<MAX_FOOD) {
 				spawnFood();
 			}			
@@ -170,11 +191,19 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 	}
 
 
-	private void drawUI() {
-		String scoreStr= String.format("%07d", score);
-		fhelper.drawShadowed(scoreStr, 0, stage.getHeight()-Assets.TILE_SIZE/2, stage.getWidth()-Assets.TILE_SIZE/3,Align.right, FontHelper.SCORE_FONT,Color.BLACK);
+	private void drawUI(float delta) {
+		float offsetX = 0;
+		String scoreStr= String.format("%07d", (long) visualScore);
+		fhelper.drawShadowed(scoreStr, 0, stage.getHeight()-Assets.TILE_SIZE/3, stage.getWidth()-Assets.TILE_SIZE/3,Align.right, FontHelper.SCORE_FONT,Color.BLACK);
 		if(gameOver) {
-			fhelper.drawShadowed("GAME OVER",0,stage.getHeight()*2/3+Assets.TILE_SIZE,stage.getWidth(),Align.center,FontHelper.MAIN_FONT,Color.BLACK);
+			shakeTime-=delta;
+			long shakeAlpha = System.currentTimeMillis() % 360;
+			float shakeDist = 2f;
+			if(shakeTime>0) {
+				offsetX += MathUtils.sinDeg(shakeAlpha) * shakeDist;
+
+			}	
+			fhelper.drawShadowed("GAME OVER",offsetX,stage.getHeight()*2/3+Assets.TILE_SIZE,stage.getWidth(),Align.center,FontHelper.MAIN_FONT,Color.BLACK);
 			stage.addActor(table);
 			if(highscore) {
 				fhelper.drawShadowed("NEW RECORD! "+score,0,stage.getHeight()/2+Assets.TILE_SIZE,stage.getWidth(),Align.center,FontHelper.SCORE_FONT,Color.BLACK);
@@ -218,7 +247,8 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 	}
 	
 	private void handleInput(int keycode) {
-		long idSnake=0;
+		game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).stop();
+
 		switch(keycode) {
 		case Keys.UP:
 			if (lastDirection!=Direction.DOWN && lastDirection!=Direction.UP) {
@@ -226,8 +256,8 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 				snake.setVel(0,Assets.TILE_SIZE);
 				lastDirection = Direction.UP;
 				snake.changeDir=false;
-				idSnake=game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play();
-				game.assets.sounds.get(Assets.SPAWN_EFFECT_S).setVolume(idSnake, .3f);
+				game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play(.3f,MathUtils.random(1,1.1f),0);
+
 			}
 			break;
 		case Keys.DOWN:
@@ -236,8 +266,7 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 				snake.setVel(0,-Assets.TILE_SIZE);
 				lastDirection = Direction.DOWN;
 				snake.changeDir=false;
-				idSnake=game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play();
-				game.assets.sounds.get(Assets.SPAWN_EFFECT_S).setVolume(idSnake, .3f);
+				game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play(.3f,MathUtils.random(1,1.1f),0);
 
 			}
 			break;
@@ -247,8 +276,7 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 				snake.setVel(-Assets.TILE_SIZE,0);
 				lastDirection = Direction.LEFT;
 				snake.changeDir=false;
-				idSnake=game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play();
-				game.assets.sounds.get(Assets.SPAWN_EFFECT_S).setVolume(idSnake, .3f);
+				game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play(.3f,MathUtils.random(1,1.1f),0);
 
 			}
 			break;
@@ -258,9 +286,7 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 				snake.setVel(Assets.TILE_SIZE,0);
 				lastDirection = Direction.RIGHT;
 				snake.changeDir=false;
-				idSnake=game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play();
-				game.assets.sounds.get(Assets.SPAWN_EFFECT_S).setVolume(idSnake, .3f);
-
+				game.assets.sounds.get(Assets.SNAKE_MOVEMENT_S).play(.3f,MathUtils.random(1,1.1f),0);
 
 			}
 		}
@@ -268,7 +294,7 @@ public class MainScreen extends ScreenAdapter implements SnakeMovementListener, 
 
 	@Override
 	public void onGameEnd() {
-		game.assets.sounds.get(Assets.SNAKE_INTRO_S).stop(id);
+		game.assets.sounds.get(Assets.SNAKE_INTRO_S).stop();
 		gameOver=true;
 		id=game.assets.sounds.get(Assets.GAME_OVER_S).play();
 
