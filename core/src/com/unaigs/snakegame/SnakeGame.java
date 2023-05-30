@@ -6,6 +6,7 @@ package com.unaigs.snakegame;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Logger;
 import com.unaigs.snakegame.data.Assets;
 import com.unaigs.snakegame.data.GameProgress;
 import com.unaigs.snakegame.screens.MenuScreen;
